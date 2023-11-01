@@ -24,3 +24,15 @@ def linear_search(gene: Gene, key_codon: Codon) -> bool:
             return True
         return False
     
+def binary_search(gene: Gene, key_condon: Codon) -> bool:
+    low: int = 0
+    high: int = len(gene) - 1
+    while low <= high:
+        mid: int = (low + high) // 2
+        if gene[mid] < key_condon:
+            low = mid + 1
+        elif gene[mid] > key_condon:
+            high = mid - 1
+        else:
+            return True
+    return False
