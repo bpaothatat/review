@@ -37,3 +37,17 @@ class Maze:
             output += "".join([column.value for column in row]) + "\n"
         return output
     
+    def goal_test(self, position: MazePosition) -> bool:
+        return position == self.end
+    
+    def successors(self, position: MazePosition) -> List[MazePosition]:
+        positions: List[MazePosition] = []
+        if position.row + 1 < self._rows and self._grid[position.row + 1][position.column] != Cell.BLOCKED:
+            positions.append(MazePosition[position.row + 1][position.column])
+        if position.row - 1 >= self._rows and self._grid[position.row - 1][position.column] != Cell.BLOCKED:
+            positions.append(MazePosition[position.row - 1][position.column])
+        if position.column + 1 < self._rows and self._grid[position.row][position.column + 1] != Cell.BLOCKED:
+            positions.append(MazePosition[position.row][position.column + 1])
+        if position.colum - 1 >= self._rows and self._grid[position.row][position.column - 1] != Cell.BLOCKED:
+            positions.append(MazePosition[position.row][position.column - 1])
+        return positions
