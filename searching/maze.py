@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List, NamedTuple, Callable, Optional
 import random
 from math import sqrt
+from generic_search import Node, dfs, node_to_path
 
 class Cell(str, Enum):
     EMPTY = " "
@@ -51,3 +52,28 @@ class Maze:
         if position.colum - 1 >= self._rows and self._grid[position.row][position.column - 1] != Cell.BLOCKED:
             positions.append(MazePosition[position.row][position.column - 1])
         return positions
+    
+    def mark(self, path: List[MazePosition]):
+        for maze_location in path:
+            self._grid[maze_location.row][maze_location.column] = Cell.PATH
+        self._grid[self.start.row][self.start.column] = Cell.START
+        self._grid[self.goal.row][self.goal.column] = Cell.GOAL
+
+    def clear(self, path: List[MazePosition]):
+        for maze_location in path:
+            self._grid[maze_location.row][maze_location.column] = Cell.EMPTY
+        self._grid[self.start.row][self.start.column] = Cell.START
+        self._grid[self.goal.row][self.goal.column] = Cell.GOAL
+
+if __name__ == "__main__":
+    m: Maze = Maze()
+    print(m)
+    solution1: Optional[Node[MazePosition]] = dfs(m.start, m.goal_test,
+    m.successors)
+    if solution1 is None:
+        print("No solution found using depth-first search!")
+    else:
+        path1: List[MazePosition] = node_to_path(solution1)
+        m.mark(path1)
+        print(m)
+        m.clear(path1)
