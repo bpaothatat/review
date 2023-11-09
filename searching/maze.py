@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, NamedTuple, Callable, Optional
 import random
 from math import sqrt
-from generic_search import Node, dfs, node_to_path
+from generic_search import Node, dfs, node_to_path, bfs
 
 class Cell(str, Enum):
     EMPTY = " "
@@ -41,29 +41,29 @@ class Maze:
     def goal_test(self, position: MazePosition) -> bool:
         return position == self.end
     
-    def successors(self, position: MazePosition) -> List[MazePosition]:
-        positions: List[MazePosition] = []
-        if position.row + 1 < self._rows and self._grid[position.row + 1][position.column] != Cell.BLOCKED:
-            positions.append(MazePosition[position.row + 1][position.column])
-        if position.row - 1 >= self._rows and self._grid[position.row - 1][position.column] != Cell.BLOCKED:
-            positions.append(MazePosition[position.row - 1][position.column])
-        if position.column + 1 < self._rows and self._grid[position.row][position.column + 1] != Cell.BLOCKED:
-            positions.append(MazePosition[position.row][position.column + 1])
-        if position.colum - 1 >= self._rows and self._grid[position.row][position.column - 1] != Cell.BLOCKED:
-            positions.append(MazePosition[position.row][position.column - 1])
-        return positions
+    def successors(self, ml: MazePosition) -> List[MazePosition]:
+        locations: List[MazePosition] = []
+        if ml.row + 1 < self._rows and self._grid[ml.row + 1][ml.column] != Cell.BLOCKED:
+            locations.append(MazePosition(ml.row + 1, ml.column))
+        if ml.row - 1 >= 0 and self._grid[ml.row - 1][ml.column] != Cell.BLOCKED:
+            locations.append(MazePosition(ml.row - 1, ml.column))
+        if ml.column + 1 < self._columns and self._grid[ml.row][ml.column + 1] != Cell.BLOCKED:
+            locations.append(MazePosition(ml.row, ml.column + 1))
+        if ml.column - 1 >= 0 and self._grid[ml.row][ml.column - 1] != Cell.BLOCKED:
+            locations.append(MazePosition(ml.row, ml.column - 1))
+        return locations
     
     def mark(self, path: List[MazePosition]):
         for maze_location in path:
             self._grid[maze_location.row][maze_location.column] = Cell.PATH
         self._grid[self.start.row][self.start.column] = Cell.START
-        self._grid[self.goal.row][self.goal.column] = Cell.GOAL
+        self._grid[self.end.row][self.end.column] = Cell.GOAL
 
     def clear(self, path: List[MazePosition]):
         for maze_location in path:
             self._grid[maze_location.row][maze_location.column] = Cell.EMPTY
         self._grid[self.start.row][self.start.column] = Cell.START
-        self._grid[self.goal.row][self.goal.column] = Cell.GOAL
+        self._grid[self.end.row][self.end.column] = Cell.GOAL
 
 if __name__ == "__main__":
     m: Maze = Maze()
@@ -77,3 +77,12 @@ if __name__ == "__main__":
         m.mark(path1)
         print(m)
         m.clear(path1)
+    print("Solution 2")
+    solution2: Optional[Node[MazePosition]] = bfs(m.start, m.goal_test, m.successors)
+    if solution2 is None:
+        print("No solution found using breadth-first search!")
+    else:
+        path2: List[MazePosition] = node_to_path(solution2)
+        m.mark(path2)
+        print(m)
+        m.clear(path2)
