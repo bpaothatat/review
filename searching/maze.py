@@ -71,6 +71,13 @@ class Maze:
             ydist: int = m1.row - goal.row
             return sqrt((xdist * xdist) + (ydist * ydist))
         return distance
+    
+    def manhattan_distance(goal: MazePosition) -> Callable[[MazePosition], float]:
+        def distance(ml: MazePosition) -> float:
+            xdist: int = abs(m1.column - goal.column)
+            ydist: int = abs(ml.row - goal.row)
+            return (xdist + ydist)
+        return distance
 
 if __name__ == "__main__":
     m: Maze = Maze()
