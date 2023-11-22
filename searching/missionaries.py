@@ -15,3 +15,41 @@ class MCState:
         return ("On the west bank there are {} missionaries and {}cannibals.\n"
                 "On the east bank there are {} missionaries and {}cannibals.\n"
                 "The boat is on the {} bank.").format(self.wm, self.wc, self.em, self.ec, ("west" if self.boat else "east"))
+    
+    def goal_test(self) -> bool: 
+        return self.is_legal and self.em == MAX_NUM and self.ex == MAX_NUM
+    
+    @property
+    def is_legal(self) -> bool:
+        if self.wm < self.wc and self.wm > 0:
+            return False
+        if self.em < self.ec and self.em > 0:
+            return False
+        return True
+    
+    def successors(self) -> List[MCState]:
+        success: List[MCState] = []
+        if self.boat:
+            if self.wm > 1:
+                success.append(MCState(self.wm - 2, self.wc, not self.boat))
+            if self.wm > 0:
+                success.append(MCState(self.wm - 1, self.wc, not self.boat))
+            if self.wc > 1:
+                success.append(MCState(self.wm, self.wc - 2, not self.boat))
+            if self.wc > 0:
+                success.append(MCState(self.wm, self.wc - 1, not self.boat))
+            if (self.wc > 0) and (self.wm > 0):
+                success.append(MCState(self.wm - 1, self.wc - 1, not self.boat))
+        else: 
+            if self.em > 1:
+                success.append(MCState(self.wm + 2, self.wc, not self.boat))
+            if self.em > 0:
+                success.append(MCState(self.wm + 1, self.wc, not self.boat))
+            if self.ec > 1:
+                success.append(MCState(self.wm, self.wc + 2, not self.boat))
+            if self.ec > 0:
+                success.append(MCState(self.wm, self.wc + 1, not self.boat))
+            if (self.ec > 0) and (self.em > 0):
+                success.append(MCState(self.wm + 1, self.wc + 1, not self.boat))
+        return [x for x in success if x.is_legal]
+    
